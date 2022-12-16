@@ -64,8 +64,53 @@ func AddTag(c *gin.Context) {
 	})
 }
 
-//更新指定标签：PUT("/tags/:id")
-//删除指定标签：DELETE("/tags/:id")
+// EditTag 更新指定标签：PUT("/tags/:id")
+func EditTag(c *gin.Context) {
+	name := c.Query("name")
+	id := c.Query("id")
+	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
+	modifiedBy := c.Query("modified_by")
+	valid := validation.Validation{}
+	valid.Required(name, "name").Message("名称不能为空")
+	valid.Required(id, "id").Message("ID不能为空")
+	valid.MaxSize(name, 100, "name").Message("最长不能超过一百个字符")
+	valid.Required(modifiedBy, "modified_by").Message("更新人不能为空")
+	valid.MaxSize(modifiedBy, 100, "modified_by").Message("最长不能超过一百个字符")
+	valid.Range(state, 0, 1, "state").Message("状态错误")
+	code := error.INVALID_PARAMS
+	if !valid.HasErrors() {
+		if !models.ExistTagByName(name) {
+			code = error.SUCCESS
+			models.EditTag(com.StrTo(id).MustInt(), name, state, modifiedBy)
+		} else {
+			code = error.ERROR
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data": 1,
+		"msg":  error.GetMsg(code),
+		"code": code,
+	})
+}
+
+// DeleteTag 删除指定标签：DELETE("/tags/:id")
+func DeleteTag(c *gin.Context) {
+	id := c.Query("id")
+	if models.DeleteTag(com.StrTo(id).MustInt()) {
+		c.JSON(http.StatusOK, gin.H{
+			"data": 1,
+			"msg":  error.GetMsg(error.SUCCESS),
+			"code": error.SUCCESS,
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data": 0,
+			"msg":  error.GetMsg(error.ERROR),
+			"code": error.ERROR,
+		})
+	}
+
+}
 
 //c.Query可用于获取?name=test&state=1这类 URL 参数，而c.DefaultQuery则支持设置一个默认值
 //code变量使用了e模块的错误编码，这正是先前规划好的错误码，方便排错和识别记录

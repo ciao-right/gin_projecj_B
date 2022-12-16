@@ -15,6 +15,10 @@ func InitRouter() *gin.Engine {
 	{
 		apiV1.GET("/tags", v1.GetTagList)
 		apiV1.POST("/tags", v1.AddTag)
+		apiV1.PUT("/tags", v1.EditTag)
+		apiV1.DELETE("/tags", v1.DeleteTag)
+		apiV1.GET("/articles", v1.GetArticle)
+
 	}
 	return r
 }

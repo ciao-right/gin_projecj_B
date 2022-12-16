@@ -51,6 +51,29 @@ func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
 	return nil
 }
+func EditTag(id int, name string, state int, modifiedBy string) bool {
+	var tag Tag
+	db.Model(&tag).Where("ID = ?", id).Update(Tag{Name: name, State: state, ModifiedBy: modifiedBy})
+	return true
+}
+
+//func EditTag(id int, data interface {}) bool {
+//	db.Model(&Tag{}).Where("id = ?", id).Updates(data)
+//
+//	return true
+//}
+
+func DeleteTag(id int) bool {
+	var tag Tag
+	db.Select("name").Where("id = ?", id).First(&tag)
+	if tag.Name != "" {
+		db.Delete(&tag, id)
+		return true
+	} else {
+		panic("查无此记录")
+		return false
+	}
+}
 
 func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
 	scope.SetColumn("ModifiedOn", time.Now().Unix())
