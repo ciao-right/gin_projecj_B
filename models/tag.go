@@ -42,6 +42,15 @@ func ExistTagByName(name string) bool {
 	return false
 }
 
+func ExistTagById(id int) bool {
+	var tag Tag
+	db.Select("id").Where("id = ?", id).First(&tag)
+	if tag.ID > 0 {
+		return true
+	}
+	return false
+}
+
 func AddTag(name string, state int, createdBy string) bool {
 	db.Create(&Tag{CreatedBy: createdBy, Name: name, State: state})
 	return true

@@ -17,8 +17,16 @@ func InitRouter() *gin.Engine {
 		apiV1.POST("/tags", v1.AddTag)
 		apiV1.PUT("/tags", v1.EditTag)
 		apiV1.DELETE("/tags", v1.DeleteTag)
-		apiV1.GET("/articles", v1.GetArticle)
-
+		//获取文章列表
+		apiV1.GET("/articlesList", v1.GetArticlesList)
+		//获取指定文章
+		apiV1.GET("/articles/:id", v1.GetArticle)
+		//新建文章
+		apiV1.POST("/articles", v1.AddArticle)
+		//更新指定文章
+		apiV1.PUT("/articles/:id", v1.EditArticle)
+		//删除指定文章
+		apiV1.DELETE("/articles/:id", v1.DeleteArticle)
 	}
 	return r
 }
